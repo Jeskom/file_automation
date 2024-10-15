@@ -1,15 +1,23 @@
 import os
 import shutil
 import time
+from datetime import datetime
+from colorama import Fore, Style
 
+#Directories
 SOURCE_DIR = "/Users/jonok/Downloads"
 DOCUMENTS_DIR = "/Users/jonok/Documents"
 PICTURES_DIR = "/Users/jonok/Pictures"
 MOVIES_DIR = "/Users/jonok/Movies"
 
+#Might move this over to a dictionary
 document_index = '.doc', '.docx', '.pdf', '.txt', '.odt', '.rtf', '.xls', '.xlsx', '.ppt', '.pptx', '.csv', '.ods', '.odp', '.md', '.epub', '.pages'
 picture_index = '.jpeg', '.jpg', '.png', '.gif', '.bmp', '.tiff', '.tif', '.svg', '.heif', '.heic', '.webp', '.raw', '.cr2', '.nef', '.arw', '.orf', '.dng', '.rw2'
 movies_index = '.mp4', '.mov', '.wmv', '.avi', '.mkv', '.flv', '.mpeg', '.mpg', '.m4v', '.webm', '.3gp'
+
+#Colours the text in the terminal
+def ct(text, color):
+    return f"{color}{text}{Style.RESET_ALL}"
 
 #Gets the files from the directory
 def sorted_directory(directory):
@@ -17,7 +25,7 @@ def sorted_directory(directory):
     sorted_items = sorted(items)
     return sorted_items
 
-#Sorts the files and hides the 2 system files
+#Sorts the files and hides the first 2 system files
 def sorting():
     sorted_list = sorted_directory(SOURCE_DIR)
     sorted_list = sorted_list[2:]
@@ -25,16 +33,21 @@ def sorting():
 
 #Moves the files
 def file_mover(file):
-    for fname in file:
-        if fname.lower().endswith(document_index):
-            shutil.move(os.path.join(SOURCE_DIR, fname), DOCUMENTS_DIR)
-            print(f"{fname} has been moved to {DOCUMENTS_DIR}")
-        elif fname.lower().endswith(picture_index):
-            shutil.move(os.path.join(SOURCE_DIR, fname), PICTURES_DIR)
-            print(f"{fname} has been moved to {PICTURES_DIR}")
-        elif fname.lower().endswith(movies_index):
-            shutil.move(os.path.join(SOURCE_DIR, fname), MOVIES_DIR)
-            print(f"{fname} has been moved to {MOVIES_DIR}")
+    now = datetime.now()
+    with open('file_movers.txt', 'a') as txt_file:
+        for fname in file:
+            if fname.lower().endswith(document_index):
+                shutil.move(os.path.join(SOURCE_DIR, fname), DOCUMENTS_DIR)
+                print(f"{ct(fname, Fore.RED)} has been moved to {ct(DOCUMENTS_DIR, Fore.BLUE)}")
+                txt_file.write(f"'{fname}' has been moved to '{DOCUMENTS_DIR}' at {now}\n")
+            elif fname.lower().endswith(picture_index):
+                shutil.move(os.path.join(SOURCE_DIR, fname), PICTURES_DIR)
+                print(f"{fname} has been moved to {PICTURES_DIR}")
+                txt_file.write(f"'{fname}' has been moved to '{PICTURES_DIR}' at {now}\n")
+            elif fname.lower().endswith(movies_index):
+                shutil.move(os.path.join(SOURCE_DIR, fname), MOVIES_DIR)
+                print(f"{fname} has been moved to {MOVIES_DIR}")
+                txt_file.write(f"'{fname}' has been moved to '{MOVIES_DIR}' at {now}\n")
     return True
 
 #Runs the program
@@ -43,4 +56,6 @@ def main():
         file_mover(sorting())
         time.sleep(600)
 
+
 main()
+
